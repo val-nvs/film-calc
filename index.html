@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Film‑Roll Calculator</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 1rem;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+    }
+    .sim-card {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 4px;
+    }
+    label {
+      display: block;
+      margin: 0.5rem 0;
+    }
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 0.3rem;
+      margin-top: 0.2rem;
+      box-sizing: border-box;
+    }
+    .results p {
+      margin: 0.25rem 0;
+    }
+    #add-sim {
+      display: block;
+      margin: 1rem auto;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Film‑Roll Simulator</h1>
+
+  <div id="simulations"></div>
+  <button id="add-sim">+ New Simulation</button>
+
+  <!-- Hidden template for cloning -->
+  <template id="card-tpl">
+    <div class="sim-card">
+      <label>
+        Roll length:
+        <select class="length">
+          <option value="400">400 ft</option>
+          <option value="100">100 ft</option>
+          <option value="4.48">4.48 ft</option>
+        </select>
+      </label>
+
+      <label>
+        Perfs per frame:
+        <input type="number" class="perfs" min="1" max="20" value="4">
+      </label>
+
+      <label>
+        Price of roll (€):
+        <input type="number" class="roll-price" step="0.01" value="10" min="0">
+      </label>
+
+      <label>
+        Cost to develop (€):
+        <input type="number" class="dev-cost" step="0.01" value="5" min="0">
+      </label>
+
+      <label>
+        Half‑frame (split side‑by‑side)?
+        <input type="checkbox" class="half-frame">
+      </label>
+
+      <label>
+        Desired frame rate (fps):
+        <input type="number" class="fps" step="0.1" value="24" min="0">
+      </label>
+
+      <label>
+        Desired duration (min):
+        <input type="number" class="duration" step="0.1" value="1" min="0">
+      </label>
+
+      <button class="calc-btn">Calculate</button>
+
+      <div class="results">
+        <p>Total frames available: <strong><span class="frames">–</span></strong></p>
+        <p>Max duration (min): <strong><span class="max-dur">–</span></strong></p>
+        <p>Price per second (€): <strong><span class="ppsec">–</span></strong></p>
+        <p>Cost for desired duration (€): <strong><span class="cost-dur">–</span></strong></p>
+        <p>Frame surface area (cm²): <strong><span class="area">–</span></strong></p>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    // Constants
+    const PITCH_IN = 0.187;             // perforation pitch in inches
+    const FULL_AREA_CM2 = (24 * 36) / 100; // full-frame area: 864 mm² -> 8.64 cm²
+
+    function calculate(card) {
+      // Read inputs
+      const L_ft      = parseFloat(card.querySelector('.length').value) || 0;
+      const perfs     = parseFloat(card.querySelector('.perfs').value) || 1;
+      const rollP     = parseFloat(card.querySelector('.roll-price').value) || 0;
+      const devP      = parseFloat(card.querySelector('.dev-cost').value) || 0;
+      const half      = card.querySelector('.half-frame').checked;
+      const fps       = parseFloat(card.querySelector('.fps').value) || 1;
+      const wantMin   = parseFloat(card.querySelector('.duration').value) || 0;
+
+      // Compute total perforations and frames
+      const totalIn    = L_ft * 12;               // inches
+      const totalPerfs = totalIn / PITCH_IN;
+      let frames       = totalPerfs / perfs;
+      if (half) frames *= 2;
+
+      // Durations and costs
+      const maxDurSec    = frames / fps;               // seconds
+      const maxDurMin    = maxDurSec / 60;             // minutes
+      const totalCost    = rollP + devP;               // €
+      const pricePerSec  = maxDurSec > 0 ? totalCost / maxDurSec : 0;
+      const wantSec      = wantMin * 60;
+      const costForT     = pricePerSec * wantSec;
+
+      // Frame area (+10% safe margin)
+      const baseArea     = half ? FULL_AREA_CM2 / 2 : FULL_AREA_CM2;
+      const areaSafe     = baseArea * 1.10;
+
+      // Output
+      card.querySelector('.frames').textContent   = Math.floor(frames);
+      card.querySelector('.max-dur').textContent  = maxDurMin.toFixed(2);
+      card.querySelector('.ppsec').textContent    = pricePerSec.toFixed(3);
+      card.querySelector('.cost-dur').textContent = costForT.toFixed(2);
+      card.querySelector('.area').textContent     = areaSafe.toFixed(2);
+    }
+
+    // Setup dynamic cards
+    const container = document.getElementById('simulations');
+    const addBtn    = document.getElementById('add-sim');
+    const tpl       = document.getElementById('card-tpl');
+
+    function makeSimCard() {
+      const clone = tpl.content.cloneNode(true);
+      const card  = clone.querySelector('.sim-card');
+      card.querySelector('.calc-btn')
+          .addEventListener('click', () => calculate(card));
+      return clone;
+    }
+
+    // Initialize first card
+    container.appendChild(makeSimCard());
+
+    // Add more on button click
+    addBtn.addEventListener('click', () => {
+      container.appendChild(makeSimCard());
+    });
+  </script>
+
+</body>
+</html>
