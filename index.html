@@ -202,7 +202,7 @@ total develop: 36 or 51<br>
         <p>Total frames available: <strong><span class="frames">–</span></strong></p>
         <p>Max duration (min): <strong><span class="max-dur">–</span></strong></p>
         <p>Price per minute (€): <strong><span class="ppmin">–</span></strong></p>
-        <p>Frame surface area (cm²): <strong><span class="area">–</span></strong></p>
+        <p>Frame surface area estimate (mm²): <strong><span class="area">–</span></strong></p>
       </div>
     </div>
   </template>
@@ -239,13 +239,15 @@ total develop: 36 or 51<br>
       // Height = perfs per frame * 4.74 mm
       const height_mm = perfs * 4.74;
       // area in mm², convert to cm² by dividing by 100
-      const area_cm2  = (width_mm * height_mm) / 100;
+      const area_cm2  = (width_mm * height_mm) / 1;
 
       // Output
       card.querySelector('.frames').textContent   = Math.floor(frames);
       card.querySelector('.max-dur').textContent  = maxDurMin.toFixed(2);
-      card.querySelector('.ppmin').textContent    = pricePerMin.toFixed(3);
-      card.querySelector('.area').textContent      = area_cm2.toFixed(2);
+      card.querySelector('.ppmin').textContent = Number(pricePerMin.toFixed(3)).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
+      card.querySelector('.area').textContent = Number(area_cm2.toFixed(2)).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
     }
 
     // Setup dynamic cards
