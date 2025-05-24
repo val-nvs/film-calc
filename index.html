@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Film‑Roll Simulator</title>
+  <title>Film-Roll Simulator</title>
   <link href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -126,7 +126,7 @@
 </head>
 <body>
 
-  <h1>Film‑Roll Simulator</h1>
+  <h1>Film-Roll Simulator</h1>
 
   <div id="simulations"></div>
   <button id="add-sim">+ New Simulation</button>
@@ -159,7 +159,7 @@
       </label>
 
       <label>
-        Half‑frame (split side‑by‑side)?
+        Half-frame (split side-by-side)?
         <input type="checkbox" class="half-frame" />
       </label>
 
@@ -206,12 +206,12 @@
       const pricePerMin  = maxDurMin > 0 ? totalCost / maxDurMin : 0;
 
       // Frame area calculation
-      // Width fixed at 25 mm
+      // Width = 25 mm normally; but half-frame splits width in two
+      const width_mm  = half ? 25 / 2 : 25;
       // Height = perfs per frame * 4.74 mm
-      // area in mm², convert to cm² by dividing by 100
-      const width_mm = 25;
       const height_mm = perfs * 4.74;
-      const area_cm2 = (width_mm * height_mm) / 100;
+      // area in mm², convert to cm² by dividing by 100
+      const area_cm2  = (width_mm * height_mm) / 100;
 
       // Output
       card.querySelector('.frames').textContent   = Math.floor(frames);
