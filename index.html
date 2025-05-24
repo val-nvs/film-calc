@@ -126,7 +126,34 @@
 </head>
 <body>
 
-  <h1>Film-Roll Simulator</h1>
+  <h1>35mm Film-Roll Simulator</h1>
+
+
+  <h3>
+    
+buy 100ft: € 143,50<br>
+<a href="https://www.unwindfilms.at/product-page/100ft-35mm-kodak-vision3-ecn-2-motion-picture-bulk-roll">
+  Buy 100ft Kodak Vision3 35mm from Unwind Films</a>
+  <br><br>
+ship berlin: not clear<br>
+develop: 10 eur<br>
+scan high: 11 eur<br>
+ship back: 15 eur<br>
+<br>
+total develop: 36 or 51<br>
+<a href="https://safelightberlin.com/collections/film-developing-new/products/ecn-2-cinema-film-developing">
+  ECN-2 Cinema Film Developing – Safelight Berlin
+</a>
+
+<br><br>
+
+
+
+
+
+  </h3>
+
+
 
   <div id="simulations"></div>
   <button id="add-sim">+ New Simulation</button>
@@ -137,8 +164,9 @@
       <label>
         Roll length:
         <select class="length">
+                    <option value="100">100 ft</option>
+
           <option value="400">400 ft</option>
-          <option value="100">100 ft</option>
           <option value="4.48">4.48 ft</option>
         </select>
       </label>
@@ -150,12 +178,12 @@
 
       <label>
         Price of roll (€):
-        <input type="number" class="roll-price" step="0.01" value="10" min="0" />
+        <input type="number" class="roll-price" step="1" value="143" min="0" />
       </label>
 
       <label>
         Cost to develop (€):
-        <input type="number" class="dev-cost" step="0.01" value="5" min="0" />
+        <input type="number" class="dev-cost" step="1" value="36" min="0" />
       </label>
 
       <label>
