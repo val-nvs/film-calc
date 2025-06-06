@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Transparent Inner Rectangle with Border + Two Rows of Rounded Rectangles</title>
+  <style>
+    /* 1em = 5px */
+    html {
+      font-size: 5px;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+    }
+
+    /* Outer rectangle: 95em × 35em */
+    .rectangle {
+      position: relative;
+      width: 95em;    /* = 475px at 100% zoom */
+      height: 35em;   /* = 175px at 100% zoom */
+      background-color: #D9955E;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    /* Inner rectangle: transparent with a white border */
+    .inner-rectangle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 95em;       /* = 475px (inclusive of border) */
+      height: 24.89em;   /* ≈124.45px */
+      background-color: transparent;
+      border: 0.1em solid rgba(255, 255, 255, 1); /* 0.1em = 0.5px at 100% zoom */
+      border-radius: 4px;
+      box-sizing: border-box;  /* include border within the 95×24.89em box */
+      z-index: 1;
+    }
+
+    /* SVG overlay covering the entire 95em × 35em box */
+    .svg-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 95em;    /* = 475px at 100% zoom */
+      height: 35em;   /* = 175px at 100% zoom */
+      pointer-events: none;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="rectangle">
+      <div class="inner-rectangle"></div>
+
+      <!-- SVG overlay using userSpaceOnUse + em units -->
+      <svg class="svg-overlay" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <!--
+            1) Vertical-stripe pattern (pitch = 4.75em, line thickness = 0.1em).
+               Centered via translating by half-pitch (2.375em).
+          -->
+          <pattern id="stripes"
+                   patternUnits="userSpaceOnUse"
+                   width="4.75em"        
+                   height="35em"        
+                   patternTransform="translate(2.375em, 0)">
+            <rect x="0" y="0"
+                  width="0.1em"     /* stripe thickness = 0.1em (≈0.5px) */
+                  height="35em"     /* full height of the rectangle */
+                  fill="rgba(255, 255, 255, 0.2)" />
+          </pattern>
+
+          <!--
+            2) Rounded-rectangle row pattern (tile width = 4.75em, tile height = 3em):
+               • Each tile holds one rounded rect of width = 2em, height = 1.5em, and rx = 0.75em.
+               • That centers each rounded rect horizontally (since (4.75 - 2)/2 = 1.375em),
+                 and vertically in a 3em-high row ((3 - 1.5)/2 = 0.75em).
+          -->
+          <pattern id="rowPattern"
+                   patternUnits="userSpaceOnUse"
+                   width="4.75em"
+                   height="3em">
+            <rect x="1.375em" y="0.75em"
+                  width="2em"
+                  height="1.5em"
+                  rx="0.75em"
+                  fill="rgba(255, 255, 255, 1)" />
+          </pattern>
+        </defs>
+
+        <!--
+          A) Draw the vertical stripes across the full 95em × 35em area
+        -->
+        <rect width="95em" height="35em" fill="url(#stripes)" />
+
+        <!--
+          B) Top row of rounded rectangles:
+             • y = 1em (to sit above the inner rectangle’s top edge at ~5.055em)
+             • height = 3em
+             • fill with rowPattern (repeats every 4.75em)
+        -->
+        <rect x="0" y="1em"
+              width="95em" height="3em"
+              fill="url(#rowPattern)" />
+
+        <!--
+          C) Bottom row of rounded rectangles:
+             • y = 31em (35em total height − 4em → leaves 1em gap to bottom)
+             • height = 3em
+             • fill with rowPattern (repeats every 4.75em)
+        -->
+        <rect x="0" y="31em"
+              width="95em" height="3em"
+              fill="url(#rowPattern)" />
+      </svg>
+    </div>
+  </div>
+</body>
+</html>
