@@ -9,7 +9,7 @@
     .container {
       width:100vw; height:100vh;
       display:flex; justify-content:center; align-items:center;
-      background:#f0f0f0;
+      background:#fafafa;
     }
     .rectangle {
       position:relative;
@@ -24,7 +24,7 @@
       top:50%; left:50%;
       transform:translate(-50%,-50%);
       width:95em; height:24.89em;
-      border:0.1em solid white;
+      border: 0.1em solid rgba(250, 250, 250, 0.5);
       border-radius:4px;
       box-sizing:border-box;
       z-index:1;
@@ -50,7 +50,7 @@
                    width="4.75em" height="35em"
                    patternTransform="translate(2.375em,0)">
             <rect x="0" y="0" width="0.1em" height="35em"
-                  fill="rgba(255,255,255,0.2)" />
+                  fill="rgba(250,250,250,0.1)" />
           </pattern>
 
           <!-- pills patterns; attributes set by JS -->
@@ -70,7 +70,7 @@
 
   <script>
     // ── USER ADJUSTABLE ──
-    const pillWidthEm  = 3;    // pill width in em
+    const pillWidthEm  = 2;    // pill width in em
     const pillHeightEm = 3;  // pill height in em
     // ─────────────────────
 
@@ -100,7 +100,7 @@
     botBand.setAttribute('y',      `${outerH - gapEm}em`);
 
     // 3) center each pill in the tile
-    const rxEm = pillHeightEm / 2;
+    const rxEm = pillHeightEm * 0.25;
     const pxEm = (4.75 - pillWidthEm) / 2;
     const pyEm = (gapEm - pillHeightEm) / 2;
 
@@ -115,7 +115,7 @@
       pill.setAttribute('width',  `${pillWidthEm}em`);
       pill.setAttribute('height', `${pillHeightEm}em`);
       pill.setAttribute('rx',     `${rxEm}em`);
-      pill.setAttribute('fill',   'white');
+      pill.setAttribute('fill',   '#fafafa');
       pat.appendChild(pill);
     });
   </script>
