@@ -2,42 +2,39 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Custom‐Sized Pills</title>
+  <title>Custom‐Sized, Perfectly‐Centered Pills</title>
   <style>
-    /* 1em = 5px */
-    html { font-size: 5px; }
-    body { margin: 0; padding: 0; }
+    html { font-size: 5px; } /* 1em = 5px */
+    body { margin:0; padding:0; }
     .container {
-      width: 100vw; height: 100vh;
-      display: flex; justify-content: center; align-items: center;
-      background-color: #f0f0f0;
+      width:100vw; height:100vh;
+      display:flex; justify-content:center; align-items:center;
+      background:#f0f0f0;
     }
     .rectangle {
-      position: relative;
-      width: 95em;  /* 475px */
-      height: 35em; /* 175px */
-      background-color: #D9955E;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
-      overflow: hidden;
+      position:relative;
+      width:95em; height:35em;
+      background:#D9955E;
+      border-radius:8px;
+      box-shadow:0 0 10px rgba(0,0,0,0.2);
+      overflow:hidden;
     }
     .inner-rectangle {
-      position: absolute;
+      position:absolute;
       top:50%; left:50%;
-      transform: translate(-50%,-50%);
-      width: 95em;
-      height: 24.89em;
-      border: 0.1em solid #fff;
-      border-radius: 4px;
-      box-sizing: border-box;
-      z-index: 1;
+      transform:translate(-50%,-50%);
+      width:95em; height:24.89em;
+      border:0.1em solid white;
+      border-radius:4px;
+      box-sizing:border-box;
+      z-index:1;
     }
     .svg-overlay {
-      position: absolute;
+      position:absolute;
       top:0; left:0;
-      width: 95em; height: 35em;
-      pointer-events: none;
-      z-index: 2;
+      width:95em; height:35em;
+      pointer-events:none;
+      z-index:2;
     }
   </style>
 </head>
@@ -47,27 +44,24 @@
       <div class="inner-rectangle"></div>
       <svg class="svg-overlay" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <!-- vertical stripes (unchanged) -->
-          <pattern id="stripes" patternUnits="userSpaceOnUse"
+          <!-- vertical stripes -->
+          <pattern id="stripes"
+                   patternUnits="userSpaceOnUse"
                    width="4.75em" height="35em"
                    patternTransform="translate(2.375em,0)">
             <rect x="0" y="0" width="0.1em" height="35em"
                   fill="rgba(255,255,255,0.2)" />
           </pattern>
 
-          <!-- placeholder patterns; attributes set by JS -->
-          <pattern id="topRow"   patternUnits="userSpaceOnUse">
-            <rect />
-          </pattern>
-          <pattern id="bottomRow" patternUnits="userSpaceOnUse">
-            <rect />
-          </pattern>
+          <!-- pills patterns; attributes set by JS -->
+          <pattern id="topRow"   patternUnits="userSpaceOnUse"></pattern>
+          <pattern id="bottomRow"patternUnits="userSpaceOnUse"></pattern>
         </defs>
 
-        <!-- background stripes -->
+        <!-- background -->
         <rect width="95em" height="35em" fill="url(#stripes)" />
 
-        <!-- top/bottom bands; heights & positions set by JS -->
+        <!-- pill bands -->
         <rect id="topBand"    x="0" y="0"   width="95em" fill="url(#topRow)" />
         <rect id="bottomBand" x="0" y="0"   width="95em" fill="url(#bottomRow)" />
       </svg>
@@ -76,49 +70,53 @@
 
   <script>
     // ── USER ADJUSTABLE ──
-    const pillWidthEm  = 3;    // e.g. 2 → 2em wide
-    const pillHeightEm = 3;  // e.g. 1.5 → 1.5em tall
+    const pillWidthEm  = 3;    // pill width in em
+    const pillHeightEm = 3;  // pill height in em
     // ─────────────────────
 
-    // constants from your layout
-    const outerH  = 35;     // em
-    const innerH  = 24.89;  // em
+    // fixed layout dims
+    const outerH = 35;     // container height (em)
+    const innerH = 24.89;  // inner rect height (em)
 
-    // compute the gap above (and below) the inner rectangle
-    const gapEm   = (outerH - innerH) / 2;
+    // compute gap above & below inner rect
+    const gapEm = (outerH - innerH) / 2;
 
-    // selector helpers
-    const topPat    = document.getElementById('topRow');
-    const botPat    = document.getElementById('bottomRow');
-    const topBand   = document.getElementById('topBand');
-    const botBand   = document.getElementById('bottomBand');
+    // grab SVG elements
+    const topPat   = document.getElementById('topRow');
+    const botPat   = document.getElementById('bottomRow');
+    const topBand  = document.getElementById('topBand');
+    const botBand  = document.getElementById('bottomBand');
 
-    // set pattern tile size
-    [topPat, botPat].forEach(pat => {
-      pat.setAttribute('width', '4.75em');
-      pat.setAttribute('height', `${gapEm}em`);
+    // 1) size the pattern tiles to the gap
+    [topPat, botPat].forEach(p => {
+      p.setAttribute('width',  '4.75em');
+      p.setAttribute('height', `${gapEm}em`);
     });
 
-    // position bands
+    // 2) position the bands
     topBand.setAttribute('height', `${gapEm}em`);
-    topBand.setAttribute('y', '0');
+    topBand.setAttribute('y',      '0');
     botBand.setAttribute('height', `${gapEm}em`);
-    botBand.setAttribute('y', `${outerH - gapEm}em`);
+    botBand.setAttribute('y',      `${outerH - gapEm}em`);
 
-    // compute centering for the pill inside the tile
-    const rxEm   = pillHeightEm / 2;                // half‐height → full rounding
-    const pxEm   = (4.75 - pillWidthEm) / 2;         // center horizontally
-    const pyEm   = (gapEm - pillHeightEm) / 2;       // center vertically
+    // 3) center each pill in the tile
+    const rxEm = pillHeightEm / 2;
+    const pxEm = (4.75 - pillWidthEm) / 2;
+    const pyEm = (gapEm - pillHeightEm) / 2;
 
-    // create <rect> shapes
-    [topPat, botPat].forEach(pat => {
-      const r = pat.querySelector('rect');
-      r.setAttribute('x', `${pxEm}em`);
-      r.setAttribute('y', `${pyEm}em`);
-      r.setAttribute('width', `${pillWidthEm}em`);
-      r.setAttribute('height', `${pillHeightEm}em`);
-      r.setAttribute('rx', `${rxEm}em`);
-      r.setAttribute('fill', 'rgba(255,255,255,1)');
+    [topPat, botPat].forEach((pat, i) => {
+      // anchor bottom pattern at its gap start
+      if (i === 1) pat.setAttribute('y', `${outerH - gapEm}em`);
+
+      // inject a rect into the pattern
+      const pill = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      pill.setAttribute('x',      `${pxEm}em`);
+      pill.setAttribute('y',      `${pyEm}em`);
+      pill.setAttribute('width',  `${pillWidthEm}em`);
+      pill.setAttribute('height', `${pillHeightEm}em`);
+      pill.setAttribute('rx',     `${rxEm}em`);
+      pill.setAttribute('fill',   'white');
+      pat.appendChild(pill);
     });
   </script>
 </body>
