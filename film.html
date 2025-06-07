@@ -47,7 +47,7 @@
         <rect x="0" y="0"    width="95em" height="3em" fill="url(#topRow)" />
         <rect x="0" y="32em" width="95em" height="3em" fill="url(#bottomRow)" />
         <!-- format overlay -->
-        <rect id="formatRect" x="0" y="0" width="0" height="0" fill="none" stroke="#fff" stroke-width="0.2em" />
+        <rect id="formatRect" x="0" y="0" width="0" height="0" fill="none" stroke="#1A237E" stroke-width="0.2em" />
       </svg>
     </div>
     <div class="button-container" id="buttons"></div>
@@ -82,17 +82,19 @@
 
     // Film formats in em units [widthEm, heightEm]
     const formats = [
-      ['Full Frame',    36,   24],
-      ['4 Perf/S35',  18.7, 24.9],
-      ['3 Perf',      13.9, 24.9],
-      ['APS-C Sony',  15.6, 23.5],
-      ['APS-C Canon', 14.9, 22.3],
-      ['Micro 4/3',     13, 17.3],
-      ['1" Sensor',    8.8, 13.2],
-      ['Super 16',    7.41,12.52],
-      ['Super 8',     4.01, 5.79],
-      ['2 Perf',      9.47, 24.9],
-      ['1 Perf',      4.75, 24.9],
+      ['35mm "Full Frame"',    36,   24],
+      ['35mm "4 Perf"/"S35"',  18.7, 24.9],
+      ['35mm "3 Perf"',      13.9, 24.9],
+      ['"APS-C" Sony',  15.6, 23.5],
+      ['"APS-C" Canon', 14.9, 22.3],
+      ['"Micro 4/3"',     13, 17.3],
+      ['"1" Sensor"',    8.8, 13.2],
+      ['"Super 16"',    7.41,12.52],
+      ['"Super 8"',     4.01, 5.79],
+      ['35mm "2 Perf"',      9.47, 24.9],
+      ['35mm "1 Perf"',      4.75, 24.9],
+      ['"65mm" 5 Perf',         23, 52.5],
+      ['"65mm" Rotated', 52.5,  23],
     ];
     const btnContainer = document.getElementById('buttons');
     const fmtRect = document.getElementById('formatRect');
