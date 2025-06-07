@@ -69,7 +69,7 @@
       if(i===1) pat.setAttribute('y',`${outerH-gapEm}em`);
       const px = (4.75 - pillWidthEm)/2;
       const py = (3 - pillHeightEm)/2;
-      const rx = pillHeightEm/2;
+      const rx = pillHeightEm*0.2;
       const pill = document.createElementNS('http://www.w3.org/2000/svg','rect');
       pill.setAttribute('x',`${px}em`);
       pill.setAttribute('y',`${py}em`);
