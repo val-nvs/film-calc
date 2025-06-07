@@ -2,121 +2,116 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Custom‐Sized, Perfectly‐Centered Pills</title>
+  <title>Pills & Film Formats Overlay</title>
   <style>
     html { font-size: 5px; } /* 1em = 5px */
-    body { margin:0; padding:0; }
+    body { margin:0; padding:0; font-family:sans-serif; background:#fafafa; }
+    .drawing-wrapper { display:flex; flex-direction:column; align-items:center; padding:2em; }
     .container {
-      width:100vw; height:100vh;
-      display:flex; justify-content:center; align-items:center;
-      background:#fafafa;
-    }
-    .rectangle {
-      position:relative;
-      width:95em; height:35em;
-      background:#D9955E;
-      border-radius:8px;
-      box-shadow:0 0 10px rgba(0,0,0,0.2);
-      overflow:hidden;
+      width:95em; height:35em; position:relative;
+      background:#D9955E; border-radius:0.4em;
+      box-shadow:0 0 2em rgba(0,0,0,0.2); overflow:hidden;
+      margin-bottom:2em;
     }
     .inner-rectangle {
-      position:absolute;
-      top:50%; left:50%;
-      transform:translate(-50%,-50%);
+      position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
       width:95em; height:24.89em;
-      border: 0.1em solid rgba(250, 250, 250, 0.5);
-      border-radius:4px;
-      box-sizing:border-box;
-      z-index:1;
+      border:0.1em solid rgba(250,250,250,0.5);
+      border-radius:0.4em; box-sizing:border-box; z-index:1;
     }
-    .svg-overlay {
-      position:absolute;
-      top:0; left:0;
-      width:95em; height:35em;
-      pointer-events:none;
-      z-index:2;
+    .svg-overlay { position:absolute; top:0; left:0; width:95em; height:35em; pointer-events:none; z-index:2; }
+    .button-container { display:flex; flex-wrap:wrap; gap:1em; justify-content:center; }
+    .btn {
+      padding:1em 2em; font-size:1.4em; border:0.1em solid #333;
+      background:#eee; border-radius:0.4em; cursor:pointer;
+      transition:background 0.2s; user-select:none;
     }
+    .btn:hover { background:#ddd; }
+    .btn.active { background:#333; color:#fff; border-color:#222; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="rectangle">
+  <div class="drawing-wrapper">
+    <div class="container">
       <div class="inner-rectangle"></div>
       <svg class="svg-overlay" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <!-- vertical stripes -->
-          <pattern id="stripes"
-                   patternUnits="userSpaceOnUse"
-                   width="4.75em" height="35em"
-                   patternTransform="translate(2.375em,0)">
-            <rect x="0" y="0" width="0.1em" height="35em"
-                  fill="rgba(250,250,250,0.1)" />
+          <pattern id="stripes" patternUnits="userSpaceOnUse" width="4.75em" height="35em" patternTransform="translate(2.375em,0)">
+            <rect x="0" y="0" width="0.1em" height="35em" fill="rgba(250,250,250,0.1)" />
           </pattern>
-
-          <!-- pills patterns; attributes set by JS -->
-          <pattern id="topRow"   patternUnits="userSpaceOnUse"></pattern>
-          <pattern id="bottomRow"patternUnits="userSpaceOnUse"></pattern>
+          <pattern id="topRow" patternUnits="userSpaceOnUse" width="4.75em" height="3em"></pattern>
+          <pattern id="bottomRow" patternUnits="userSpaceOnUse" width="4.75em" height="3em"></pattern>
         </defs>
-
-        <!-- background -->
         <rect width="95em" height="35em" fill="url(#stripes)" />
-
-        <!-- pill bands -->
-        <rect id="topBand"    x="0" y="0"   width="95em" fill="url(#topRow)" />
-        <rect id="bottomBand" x="0" y="0"   width="95em" fill="url(#bottomRow)" />
+        <!-- pills -->
+        <rect x="0" y="0"    width="95em" height="3em" fill="url(#topRow)" />
+        <rect x="0" y="32em" width="95em" height="3em" fill="url(#bottomRow)" />
+        <!-- format overlay -->
+        <rect id="formatRect" x="0" y="0" width="0" height="0" fill="none" stroke="#fff" stroke-width="0.2em" />
       </svg>
     </div>
+    <div class="button-container" id="buttons"></div>
   </div>
-
   <script>
-    // ── USER ADJUSTABLE ──
-    const pillWidthEm  = 2;    // pill width in em
-    const pillHeightEm = 3;  // pill height in em
-    // ─────────────────────
+    // USER ADJUSTABLE PILLS
+    const pillWidthEm  = 2;
+    const pillHeightEm = 3;
+    const outerW = 95, outerH = 35;
+    const innerH = 24.89;
+    const gapEm = (outerH - innerH)/2;
 
-    // fixed layout dims
-    const outerH = 35;     // container height (em)
-    const innerH = 24.89;  // inner rect height (em)
-
-    // compute gap above & below inner rect
-    const gapEm = (outerH - innerH) / 2;
-
-    // grab SVG elements
-    const topPat   = document.getElementById('topRow');
-    const botPat   = document.getElementById('bottomRow');
-    const topBand  = document.getElementById('topBand');
-    const botBand  = document.getElementById('bottomBand');
-
-    // 1) size the pattern tiles to the gap
-    [topPat, botPat].forEach(p => {
-      p.setAttribute('width',  '4.75em');
-      p.setAttribute('height', `${gapEm}em`);
+    // Setup pill patterns
+    const topPat = document.getElementById('topRow');
+    const botPat = document.getElementById('bottomRow');
+    [topPat, botPat].forEach((pat,i)=>{
+      pat.setAttribute('width','4.75em');
+      pat.setAttribute('height','3em');
+      if(i===1) pat.setAttribute('y',`${outerH-gapEm}em`);
+      const px = (4.75 - pillWidthEm)/2;
+      const py = (3 - pillHeightEm)/2;
+      const rx = pillHeightEm/2;
+      const pill = document.createElementNS('http://www.w3.org/2000/svg','rect');
+      pill.setAttribute('x',`${px}em`);
+      pill.setAttribute('y',`${py}em`);
+      pill.setAttribute('width',`${pillWidthEm}em`);
+      pill.setAttribute('height',`${pillHeightEm}em`);
+      pill.setAttribute('rx',`${rx}em`);
+      pill.setAttribute('fill','#fafafa');
+      pat.appendChild(pill);
     });
 
-    // 2) position the bands
-    topBand.setAttribute('height', `${gapEm}em`);
-    topBand.setAttribute('y',      '0');
-    botBand.setAttribute('height', `${gapEm}em`);
-    botBand.setAttribute('y',      `${outerH - gapEm}em`);
-
-    // 3) center each pill in the tile
-    const rxEm = pillHeightEm * 0.25;
-    const pxEm = (4.75 - pillWidthEm) / 2;
-    const pyEm = (gapEm - pillHeightEm) / 2;
-
-    [topPat, botPat].forEach((pat, i) => {
-      // anchor bottom pattern at its gap start
-      if (i === 1) pat.setAttribute('y', `${outerH - gapEm}em`);
-
-      // inject a rect into the pattern
-      const pill = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-      pill.setAttribute('x',      `${pxEm}em`);
-      pill.setAttribute('y',      `${pyEm}em`);
-      pill.setAttribute('width',  `${pillWidthEm}em`);
-      pill.setAttribute('height', `${pillHeightEm}em`);
-      pill.setAttribute('rx',     `${rxEm}em`);
-      pill.setAttribute('fill',   '#fafafa');
-      pat.appendChild(pill);
+    // Film formats in em units [widthEm, heightEm]
+    const formats = [
+      ['FF',            36,   24],
+      ['4 Perf S35',  18.7, 24.9],
+      ['3 Perf',      13.9, 24.9],
+      ['APS-C Sony',  15.6, 23.5],
+      ['APS-C Canon', 14.9, 22.3],
+      ['Micro 4/3',     13, 17.3],
+      ['1" Sensor',    8.8, 13.2],
+      ['Super 8',     4.01, 5.79],
+      ['2 Perf',      9.47, 24.9],
+      ['1 Perf',      4.75, 24.9],
+    ];
+    const btnContainer = document.getElementById('buttons');
+    const fmtRect = document.getElementById('formatRect');
+    formats.forEach(([name,wEm,hEm])=>{
+      const btn=document.createElement('button');
+      btn.textContent=name; btn.className='btn';
+      btnContainer.appendChild(btn);
+      btn.onclick=()=>{
+        document.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        // use ems directly
+        const rectW = wEm;
+        const rectH = hEm;
+        const x=(outerW-rectW)/2;
+        const y=(outerH-rectH)/2;
+        fmtRect.setAttribute('x',`${x}em`);
+        fmtRect.setAttribute('y',`${y}em`);
+        fmtRect.setAttribute('width',`${rectW}em`);
+        fmtRect.setAttribute('height',`${rectH}em`);
+      };
     });
   </script>
 </body>
