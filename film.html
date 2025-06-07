@@ -2,60 +2,40 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Transparent Inner Rectangle with Border + Two Rows of Rounded Rectangles</title>
+  <title>Custom‐Sized Pills</title>
   <style>
     /* 1em = 5px */
-    html {
-      font-size: 5px;
-    }
-
-    body {
-      margin: 0;
-      padding: 0;
-    }
-
+    html { font-size: 5px; }
+    body { margin: 0; padding: 0; }
     .container {
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      width: 100vw; height: 100vh;
+      display: flex; justify-content: center; align-items: center;
       background-color: #f0f0f0;
     }
-
-    /* Outer rectangle: 95em × 35em */
     .rectangle {
       position: relative;
-      width: 95em;    /* = 475px at 100% zoom */
-      height: 35em;   /* = 175px at 100% zoom */
+      width: 95em;  /* 475px */
+      height: 35em; /* 175px */
       background-color: #D9955E;
       border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
       overflow: hidden;
     }
-
-    /* Inner rectangle: transparent with a white border */
     .inner-rectangle {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 95em;       /* = 475px (inclusive of border) */
-      height: 24.89em;   /* ≈124.45px */
-      background-color: transparent;
-      border: 0.1em solid rgba(255, 255, 255, 1); /* 0.1em = 0.5px at 100% zoom */
+      top:50%; left:50%;
+      transform: translate(-50%,-50%);
+      width: 95em;
+      height: 24.89em;
+      border: 0.1em solid #fff;
       border-radius: 4px;
-      box-sizing: border-box;  /* include border within the 95×24.89em box */
+      box-sizing: border-box;
       z-index: 1;
     }
-
-    /* SVG overlay covering the entire 95em × 35em box */
     .svg-overlay {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 95em;    /* = 475px at 100% zoom */
-      height: 35em;   /* = 175px at 100% zoom */
+      top:0; left:0;
+      width: 95em; height: 35em;
       pointer-events: none;
       z-index: 2;
     }
@@ -65,69 +45,81 @@
   <div class="container">
     <div class="rectangle">
       <div class="inner-rectangle"></div>
-
-      <!-- SVG overlay using userSpaceOnUse + em units -->
       <svg class="svg-overlay" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <!--
-            1) Vertical-stripe pattern (pitch = 4.75em, line thickness = 0.1em).
-               Centered via translating by half-pitch (2.375em).
-          -->
-          <pattern id="stripes"
-                   patternUnits="userSpaceOnUse"
-                   width="4.75em"        
-                   height="35em"        
-                   patternTransform="translate(2.375em, 0)">
-            <rect x="0" y="0"
-                  width="0.1em"     /* stripe thickness = 0.1em (≈0.5px) */
-                  height="35em"     /* full height of the rectangle */
-                  fill="rgba(255, 255, 255, 0.2)" />
+          <!-- vertical stripes (unchanged) -->
+          <pattern id="stripes" patternUnits="userSpaceOnUse"
+                   width="4.75em" height="35em"
+                   patternTransform="translate(2.375em,0)">
+            <rect x="0" y="0" width="0.1em" height="35em"
+                  fill="rgba(255,255,255,0.2)" />
           </pattern>
 
-          <!--
-            2) Rounded-rectangle row pattern (tile width = 4.75em, tile height = 3em):
-               • Each tile holds one rounded rect of width = 2em, height = 1.5em, and rx = 0.75em.
-               • That centers each rounded rect horizontally (since (4.75 - 2)/2 = 1.375em),
-                 and vertically in a 3em-high row ((3 - 1.5)/2 = 0.75em).
-          -->
-          <pattern id="rowPattern"
-                   patternUnits="userSpaceOnUse"
-                   width="4.75em"
-                   height="3em">
-            <rect x="1.375em" y="0.75em"
-                  width="2em"
-                  height="1.5em"
-                  rx="0.75em"
-                  fill="rgba(255, 255, 255, 1)" />
+          <!-- placeholder patterns; attributes set by JS -->
+          <pattern id="topRow"   patternUnits="userSpaceOnUse">
+            <rect />
+          </pattern>
+          <pattern id="bottomRow" patternUnits="userSpaceOnUse">
+            <rect />
           </pattern>
         </defs>
 
-        <!--
-          A) Draw the vertical stripes across the full 95em × 35em area
-        -->
+        <!-- background stripes -->
         <rect width="95em" height="35em" fill="url(#stripes)" />
 
-        <!--
-          B) Top row of rounded rectangles:
-             • y = 1em (to sit above the inner rectangle’s top edge at ~5.055em)
-             • height = 3em
-             • fill with rowPattern (repeats every 4.75em)
-        -->
-        <rect x="0" y="1em"
-              width="95em" height="3em"
-              fill="url(#rowPattern)" />
-
-        <!--
-          C) Bottom row of rounded rectangles:
-             • y = 31em (35em total height − 4em → leaves 1em gap to bottom)
-             • height = 3em
-             • fill with rowPattern (repeats every 4.75em)
-        -->
-        <rect x="0" y="31em"
-              width="95em" height="3em"
-              fill="url(#rowPattern)" />
+        <!-- top/bottom bands; heights & positions set by JS -->
+        <rect id="topBand"    x="0" y="0"   width="95em" fill="url(#topRow)" />
+        <rect id="bottomBand" x="0" y="0"   width="95em" fill="url(#bottomRow)" />
       </svg>
     </div>
   </div>
+
+  <script>
+    // ── USER ADJUSTABLE ──
+    const pillWidthEm  = 3;    // e.g. 2 → 2em wide
+    const pillHeightEm = 3;  // e.g. 1.5 → 1.5em tall
+    // ─────────────────────
+
+    // constants from your layout
+    const outerH  = 35;     // em
+    const innerH  = 24.89;  // em
+
+    // compute the gap above (and below) the inner rectangle
+    const gapEm   = (outerH - innerH) / 2;
+
+    // selector helpers
+    const topPat    = document.getElementById('topRow');
+    const botPat    = document.getElementById('bottomRow');
+    const topBand   = document.getElementById('topBand');
+    const botBand   = document.getElementById('bottomBand');
+
+    // set pattern tile size
+    [topPat, botPat].forEach(pat => {
+      pat.setAttribute('width', '4.75em');
+      pat.setAttribute('height', `${gapEm}em`);
+    });
+
+    // position bands
+    topBand.setAttribute('height', `${gapEm}em`);
+    topBand.setAttribute('y', '0');
+    botBand.setAttribute('height', `${gapEm}em`);
+    botBand.setAttribute('y', `${outerH - gapEm}em`);
+
+    // compute centering for the pill inside the tile
+    const rxEm   = pillHeightEm / 2;                // half‐height → full rounding
+    const pxEm   = (4.75 - pillWidthEm) / 2;         // center horizontally
+    const pyEm   = (gapEm - pillHeightEm) / 2;       // center vertically
+
+    // create <rect> shapes
+    [topPat, botPat].forEach(pat => {
+      const r = pat.querySelector('rect');
+      r.setAttribute('x', `${pxEm}em`);
+      r.setAttribute('y', `${pyEm}em`);
+      r.setAttribute('width', `${pillWidthEm}em`);
+      r.setAttribute('height', `${pillHeightEm}em`);
+      r.setAttribute('rx', `${rxEm}em`);
+      r.setAttribute('fill', 'rgba(255,255,255,1)');
+    });
+  </script>
 </body>
 </html>
