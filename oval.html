@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ellipse Columns with Centered Image</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #f0f0f0;
+      overflow: hidden;
+    }
+
+    .container {
+      position: relative;
+      flex: 1;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .center-image {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: auto;
+      height: 300px;
+    }
+
+    .ellipse-column {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--gap, 20px);
+      left: var(--horizontal-offset);
+      transform: translateX(-50%);
+    }
+
+    .ellipse {
+      width: var(--ellipse-width, 60px);
+      height: var(--ellipse-height, 30px);
+      background-color: #3498db;
+      border-radius: 50%;
+      transform: rotate(var(--ellipse-angle, 0deg));
+    }
+
+    .left-column {
+      --horizontal-offset: calc(50% - var(--column-separation, 100px));
+    }
+
+    .right-column {
+      --horizontal-offset: calc(50% + var(--column-separation, 100px));
+    }
+
+    .controls {
+      width: 90%;
+      max-width: 800px;
+      padding: 10px;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <div class="control-group">
+      <label>Ellipse Width</label>
+      <input type="range" min="10" max="400" value="60" id="ellipseWidth">
+    </div>
+    <div class="control-group">
+      <label>Ellipse Height</label>
+      <input type="range" min="10" max="400" value="30" id="ellipseHeight">
+    </div>
+    <div class="control-group">
+      <label>Ellipse Angle</label>
+      <input type="range" min="-180" max="180" value="0" id="ellipseAngle">
+    </div>
+    <div class="control-group">
+      <label>Vertical Gap</label>
+      <input type="range" min="-100" max="200" value="30" id="ellipseGap">
+    </div>
+    <div class="control-group">
+      <label>Column Separation</label>
+      <input type="range" min="0" max="600" value="100" id="columnSeparation">
+    </div>
+  </div>
+
+  <div class="container">
+    <img class="center-image" src="35.png" alt="Centered Image">
+    <div class="ellipse-column left-column" id="leftColumn"
+         style="--gap: 30px; --ellipse-width: 60px; --ellipse-height: 30px; --ellipse-angle: 0deg; --column-separation: 100px;">
+      <div class="ellipse"></div>
+      <div class="ellipse"></div>
+      <div class="ellipse"></div>
+      <div class="ellipse"></div>
+    </div>
+
+    <div class="ellipse-column right-column" id="rightColumn"
+         style="--gap: 30px; --ellipse-width: 60px; --ellipse-height: 30px; --ellipse-angle: 0deg; --column-separation: 100px;">
+      <div class="ellipse"></div>
+      <div class="ellipse"></div>
+      <div class="ellipse"></div>
+      <div class="ellipse"></div>
+    </div>
+  </div>
+
+  <script>
+    const leftColumn = document.getElementById('leftColumn');
+    const rightColumn = document.getElementById('rightColumn');
+
+    document.getElementById('ellipseWidth').addEventListener('input', e => {
+      leftColumn.style.setProperty('--ellipse-width', `${e.target.value}px`);
+      rightColumn.style.setProperty('--ellipse-width', `${e.target.value}px`);
+    });
+
+    document.getElementById('ellipseHeight').addEventListener('input', e => {
+      leftColumn.style.setProperty('--ellipse-height', `${e.target.value}px`);
+      rightColumn.style.setProperty('--ellipse-height', `${e.target.value}px`);
+    });
+
+    document.getElementById('ellipseAngle').addEventListener('input', e => {
+      leftColumn.style.setProperty('--ellipse-angle', `${e.target.value}deg`);
+      rightColumn.style.setProperty('--ellipse-angle', `${e.target.value}deg`);
+    });
+
+    document.getElementById('ellipseGap').addEventListener('input', e => {
+      leftColumn.style.setProperty('--gap', `${e.target.value}px`);
+      rightColumn.style.setProperty('--gap', `${e.target.value}px`);
+    });
+
+    document.getElementById('columnSeparation').addEventListener('input', e => {
+      leftColumn.style.setProperty('--column-separation', `${e.target.value}px`);
+      rightColumn.style.setProperty('--column-separation', `${e.target.value}px`);
+    });
+  </script>
+</body>
+</html>
